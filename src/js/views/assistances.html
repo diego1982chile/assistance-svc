@@ -1,0 +1,215 @@
+<!--
+ Copyright (c) 2014, 2021, Oracle and/or its affiliates.
+ Licensed under The Universal Permissive License (UPL), Version 1.0
+ as shown at https://oss.oracle.com/licenses/upl/
+ -->
+ <div class="oj-hybrid-padding">
+  <h1>Assistances</h1>
+  <div>
+    <div id="componentDemoContent" class="oj-flex">    
+      
+      <div id="tableWrapper" class="oj-xl-9 oj-lg-12 oj-md-12 oj-sm-12 oj-flex-item oj-flex">
+
+      <div aria-labelledby="grouplabel1">
+        <oj-input-text id="filter" class="oj-form-control-max-width-md" label-hint="Filter" label-edge="inside"
+            placeholder="Type to filter" on-raw-value-changed="[[handleValueChanged]]" 
+            value="{{filter}}" clear-icon="always">                         
+        </oj-input-text>            
+      </div>    
+  
+      <oj-form-layout id="myForm" label-edge="top" columns="1" max-columns="1" style="width:100%">      
+
+          <oj-button chroming="callToAction" on-oj-action="[[openDialog]]" id='borderlessPushIcon' style="float:right" >                      
+            New Assistance
+          </oj-button> 
+          
+          <oj-table id="table" style="width:100%; height: 37rem;"
+                aria-label="Assistances Table"
+                class='oj-bg-body demo-table-container'
+                dnd='{"reorder": {"columns": "enabled"}}'
+                data='[[datasource]]'
+                edit-mode='rowEdit'
+                edit-row='{{editRow}}'
+                on-oj-before-row-edit='[[beforeRowEditListener]]'
+                on-oj-before-row-edit-end='[[beforeRowEditEndListener]]'
+                columns-default.sortable='disabled'              
+                columns='[
+                          {"headerText": "", "style": "vertical-align: middle", "width": "50px"},
+                          {"headerText": "Teacher", "sortable": "enabled", "sortProperty": "teacher", "style": "vertical-align: middle"},
+                          {"headerText": "Event", "sortable": "enabled", "sortProperty": "event","style": "white-space:normal;word-wrap:break-word; text-align: left;vertical-align: middle;"},                          
+                          {"headerText": "Schedule", "sortable": "enabled", "sortProperty": "schedule"},
+                          {"headerText": "Arrival", "sortable": "enabled", "sortProperty": "schedule"},                          
+                          {"headerText": "Room", "sortable": "enabled", "sortProperty": "room", "style": "white-space:normal;word-wrap:break-word; text-align: left;vertical-align: middle;"},
+                          {"headerText": "Assisted", "sortable": "disabled", "style": "vertical-align: middle", "width": "112px"},
+                          {"headerText": "", "style": "vertical-align: middle", "width": "50px"}
+                          ]'>
+  
+                          <template slot="rowTemplate" data-oj-as="row">
+                            <tr>
+                              <td>
+                                <oj-button id="icon_button1" display="icons" chroming="borderless">
+                                  Icon Button
+                                  <span slot="startIcon" class="oj-ux-ico-information" style="font-size: x-large"></span>
+                                </oj-button>                          
+                              </td>
+                              <td>
+                                <oj-bind-text value="[[row.data.teacher.firstName + ' ' + row.data.teacher.lastName]]"></oj-bind-text>
+                              </td>
+                              <td>
+                                <oj-bind-text value="[[row.data.subject.code + ' - ' + row.data.subject.name]]"></oj-bind-text>
+                              </td>                              
+                              <td>
+                                <oj-bind-text value="[[row.data.begin + ' - ' + row.data.end]]"></oj-bind-text>
+                              </td>
+                              <td>
+                                <oj-bind-text value="[[row.data.begin]]"></oj-bind-text>
+                              </td>                                
+                              <td>
+                                <oj-bind-text value="[[row.data.room.code + ' - ' + row.data.room.name]]"></oj-bind-text>
+                              </td>
+                              <td>                              
+                                <oj-buttonset-one
+                                  slot="value"
+                                  id="buttonsetLabelDemoId"
+                                  labelled-by="mainlabelid"
+                                  value="[[row.data.assisted]]">
+                                  <!-- This is an example of how to use oj-bind-for-each, along with oj-bind-text to iterate over an array of objects-->
+                                  <oj-bind-for-each data="[[assistanceOptions]]">
+                                    <template>
+                                      <oj-option :id="[[$current.data.id]]" value="[[$current.data.value]]">
+                                        <oj-bind-text value="[[$current.data.assistance]]"></oj-bind-text>
+                                      </oj-option>
+                                    </template>
+                                  </oj-bind-for-each>
+                                </oj-buttonset-one>
+                              </td>
+                              <td>
+                                <oj-menu-button id="menuButton4" display="icons">
+                                  <span slot="endIcon" class="oj-ux-ico-settings" style="font-size: x-large"></span>
+                                  Action
+                                  <oj-menu id="myMenu4" slot="menu">
+                                    <oj-bind-for-each data="[[menuItems]]">
+                                      <template>
+                                        <oj-option
+                                          value="[[$current.data.label]]"
+                                          disabled="[[$current.data.disabled]]"
+                                          :id="[[$current.data.id]]">
+                                          <oj-bind-if test="[[$current.data.icon]]">
+                                            <span slot="startIcon" :class="[[$current.data.icon]]" style="font-size: x-large"></span>
+                                          </oj-bind-if>
+                                          <oj-bind-text value="[[$current.data.label]]"></oj-bind-text>
+                                        </oj-option>
+                                      </template>
+                                    </oj-bind-for-each>
+                                  </oj-menu>
+                                </oj-menu-button>                          
+                              </td>
+                            </tr>
+                          </template>
+            </oj-table>                          
+  
+      </oj-form-layout>   
+          
+      <oj-dialog id="dialog1" dialog-title="New Teacher" cancel-behavior="icon" style="min-width:350px">
+          <div slot="body">
+              <oj-form-layout id="myForm" label-edge="start" columns="1" max-columns="1">                                
+                <oj-input-text
+                  id="firstname"
+                  value="{{firstName}}"
+                  required="required"                  
+                  label-hint="First Name">              
+                </oj-input-text>
+                
+                <oj-input-text
+                  id="lastname"
+                  value="{{lastName}}"                              
+                  required="required"
+                  label-hint="Last Name">              
+                </oj-input-text>
+  
+                <oj-input-text
+                  id="email"
+                  value="{{email}}"
+                  validators="[[emailPatternValidator]]"
+                  placeholder="neighbor@example.com"
+                  required="required"
+                  label-hint="Email">   
+                    <div slot="end" class="oj-text-field-start-end-icon oj-ux-ico-email" role="img"></div>         
+                </oj-input-text>
+  
+                <oj-input-text
+                  id="phone"
+                  value="{{phone}}"   
+                  validators="[[phonePatternValidator]]"
+                  placeholder="+56 9 12345678"
+                  required="required"
+                  label-hint="Phone"> 
+                    <!--div slot="start" class="" role="img" style="padding-left:5px">+56 9</div-->
+                    <div slot="end" class="oj-text-field-start-end-icon oj-ux-ico-phone" role="img"></div>
+                </oj-input-text>
+              </oj-form-layout> 
+          </div>
+          <div slot="footer">
+              <oj-button id="okButton" chroming="callToAction" on-oj-action="[[createTeacher]]">Submit</oj-button>
+          </div>
+      </oj-dialog>
+
+      <oj-dialog id="dialog1" dialog-title="New Teacher" cancel-behavior="icon" style="min-width:350px">
+        <div slot="body">
+            <oj-form-layout id="myForm" label-edge="start" columns="1" max-columns="1">                                
+              <oj-input-text
+                id="firstname"
+                value="{{firstName}}"
+                required="required"                  
+                label-hint="First Name">              
+              </oj-input-text>
+              
+              <oj-input-text
+                id="lastname"
+                value="{{lastName}}"                              
+                required="required"
+                label-hint="Last Name">              
+              </oj-input-text>
+
+              <oj-input-text
+                id="email"
+                value="{{email}}"
+                validators="[[emailPatternValidator]]"
+                placeholder="neighbor@example.com"
+                required="required"
+                label-hint="Email">   
+                  <div slot="end" class="oj-text-field-start-end-icon oj-ux-ico-email" role="img"></div>         
+              </oj-input-text>
+
+              <oj-input-text
+                id="phone"
+                value="{{phone}}"   
+                validators="[[phonePatternValidator]]"
+                placeholder="+56 9 12345678"
+                required="required"
+                label-hint="Phone"> 
+                  <!--div slot="start" class="" role="img" style="padding-left:5px">+56 9</div-->
+                  <div slot="end" class="oj-text-field-start-end-icon oj-ux-ico-phone" role="img"></div>
+              </oj-input-text>
+            </oj-form-layout> 
+        </div>
+        <div slot="footer">
+            <oj-button id="okButton" chroming="callToAction" on-oj-action="[[createTeacher]]">Submit</oj-button>
+        </div>
+    </oj-dialog>
+       
+      </div>
+
+      <div id="tableWrapper" class="oj-xl-3 oj-lg-12 oj-md-12 oj-sm-12 oj-flex-item oj-flex" style="justify-content: end;">          
+          <oj-date-picker 
+            id="datepicker" 
+            value="{{date}}" 
+            day-formatter="[[formatDay]]">
+          </oj-date-picker>
+        </oj-form-layout>          
+      
+      </div>
+        
+  </div>
+    
+</div>

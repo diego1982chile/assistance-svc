@@ -1,0 +1,173 @@
+<!--
+ Copyright (c) 2014, 2021, Oracle and/or its affiliates.
+ Licensed under The Universal Permissive License (UPL), Version 1.0
+ as shown at https://oss.oracle.com/licenses/upl/
+ -->
+ <div class="oj-hybrid-padding">
+  <h1>Teachers</h1>
+  <div>
+    <div id="componentDemoContent" class="oj-flex">    
+      
+      <div id="tableWrapper" class="oj-xl-9 oj-lg-10 oj-md-12 oj-sm-12 oj-flex-item oj-flex">
+
+      <div aria-labelledby="grouplabel1">
+        <oj-input-text id="filter" class="oj-form-control-max-width-md" label-hint="Filter" label-edge="inside"
+            placeholder="Type to filter" on-raw-value-changed="[[handleValueChanged]]" 
+            value="{{filter}}" clear-icon="always">                         
+        </oj-input-text>      
+      </div>    
+  
+      <oj-form-layout id="myForm" label-edge="top" columns="1" max-columns="1" style="width:100%">                    
+
+          <oj-button chroming="callToAction" on-oj-action="[[openDialog]]" id='borderlessPushIcon' style="float:right" >                      
+            New Teacher
+          </oj-button> 
+          
+          <oj-table id="table" style="width:100%; height: 37rem;"
+                aria-label="Teachers Table"
+                class='oj-bg-body demo-table-container'
+                dnd='{"reorder": {"columns": "enabled"}}'
+                data='[[datasource]]'
+                edit-mode='rowEdit'
+                edit-row='{{editRow}}'
+                on-oj-before-row-edit='[[beforeRowEditListener]]'
+                on-oj-before-row-edit-end='[[beforeRowEditEndListener]]'
+                columns-default.sortable='disabled'              
+                columns='[
+                          {"field": "firstName",                          
+                          "headerText": "First Name",                                                                          
+                          "template": "firstnameTemplate"},
+                          {"field": "lastName",                          
+                          "headerText": "Last Name",                                                                              
+                          "template": "lastnameTemplate"},
+                          {"field": "email",                                                    
+                          "headerText": "E-Mail",                                                    
+                          "template": "emailTemplate"},
+                          {"field": "phone",                                                    
+                          "headerText": "Phone",                                                    
+                          "template": "phoneTemplate"},                                              
+                          { "headerText": "Action",              
+                            "width": "6em",                          
+                            "headerStyle": "text-align: center;",
+                            "style":"padding-top: 0px; padding-bottom: 0px; text-align: center;",
+                            "template": "actionTemplate"}
+                            ]'>
+  
+              <template slot="readOnlyTemplate" data-oj-as="cell">
+                <oj-bind-text value="[[cell.data]]"></oj-bind-text>
+              </template>          
+  
+              <template slot="firstnameTemplate" data-oj-as="cell">
+                <oj-bind-if test='[[cell.mode=="navigation"]]'>
+                  <oj-bind-text value="[[cell.data]]"></oj-bind-text>
+                </oj-bind-if>
+  
+                <oj-bind-if test='[[cell.mode=="edit"]]'>            
+                  <oj-input-text id="it1" value="{{rowData.firstName}}" required class="editable"></oj-input-text>
+                </oj-bind-if>
+              </template>
+
+              <template slot="lastnameTemplate" data-oj-as="cell">
+                <oj-bind-if test='[[cell.mode=="navigation"]]'>
+                  <oj-bind-text value="[[cell.data]]"></oj-bind-text>
+                </oj-bind-if>
+  
+                <oj-bind-if test='[[cell.mode=="edit"]]'>            
+                  <oj-input-text id="it1" value="{{rowData.lastName}}" required class="editable"></oj-input-text>
+                </oj-bind-if>
+              </template>
+
+              <template slot="emailTemplate" data-oj-as="cell">
+                <oj-bind-if test='[[cell.mode=="navigation"]]'>
+                  <oj-bind-text value="[[cell.data]]"></oj-bind-text>
+                </oj-bind-if>
+  
+                <oj-bind-if test='[[cell.mode=="edit"]]'>            
+                  <oj-input-text id="it1" value="{{rowData.email}}" required class="editable"></oj-input-text>
+                </oj-bind-if>
+              </template>
+
+              <template slot="phoneTemplate" data-oj-as="cell">
+                <oj-bind-if test='[[cell.mode=="navigation"]]'>
+                  <oj-bind-text value="[[cell.data]]"></oj-bind-text>
+                </oj-bind-if>
+  
+                <oj-bind-if test='[[cell.mode=="edit"]]'>            
+                  <oj-input-text id="it1" value="{{rowData.phone}}" required class="editable"></oj-input-text>
+                </oj-bind-if>
+              </template>
+  
+              <template slot="actionTemplate" data-oj-as="cell">
+                <oj-bind-if test='[[cell.mode=="navigation"]]'>
+                  <oj-button display='icons' chroming='solid' on-oj-action="[[handleUpdate]]">
+                    <span slot='startIcon' class="oj-ux-ico-edit"></span>
+                    Edit
+                  </oj-button>
+                </oj-bind-if>
+  
+                <oj-bind-if test='[[cell.mode=="edit"]]'>
+                  <oj-toolbar class="oj-sm-padding-0-vertical oj-flex oj-sm-flex-items-initial oj-sm-justify-content-center">
+                    <oj-button class="oj-flex-item" chroming='solid' display='icons' on-oj-action="[[handleDone]]">
+                      <span slot='startIcon' class="oj-ux-ico-check"></span>
+                      Save
+                    </oj-button>
+                    <oj-button class="oj-flex-item" chroming='solid' display='icons' on-oj-action="[[handleCancel]]">
+                      <span slot='startIcon' class="oj-ux-ico-multiply"></span>
+                      Cancel
+                    </oj-button>
+                  </oj-toolbar>
+                </oj-bind-if>
+              </template>
+            </oj-table>                          
+  
+      </oj-form-layout>   
+          
+      <oj-dialog id="dialog1" dialog-title="New Teacher" cancel-behavior="icon" style="min-width:350px">
+          <div slot="body">
+              <oj-form-layout id="myForm" label-edge="start" columns="1" max-columns="1">                                
+                <oj-input-text
+                  id="firstname"
+                  value="{{firstName}}"
+                  required="required"                  
+                  label-hint="First Name">              
+                </oj-input-text>
+                
+                <oj-input-text
+                  id="lastname"
+                  value="{{lastName}}"                              
+                  required="required"
+                  label-hint="Last Name">              
+                </oj-input-text>
+  
+                <oj-input-text
+                  id="email"
+                  value="{{email}}"
+                  validators="[[emailPatternValidator]]"
+                  placeholder="neighbor@example.com"
+                  required="required"
+                  label-hint="Email">   
+                    <div slot="end" class="oj-text-field-start-end-icon oj-ux-ico-email" role="img"></div>         
+                </oj-input-text>
+  
+                <oj-input-text
+                  id="phone"
+                  value="{{phone}}"   
+                  validators="[[phonePatternValidator]]"
+                  placeholder="+56 9 12345678"
+                  required="required"
+                  label-hint="Phone"> 
+                    <!--div slot="start" class="" role="img" style="padding-left:5px">+56 9</div-->
+                    <div slot="end" class="oj-text-field-start-end-icon oj-ux-ico-phone" role="img"></div>
+                </oj-input-text>
+              </oj-form-layout> 
+          </div>
+          <div slot="footer">
+              <oj-button id="okButton" chroming="callToAction" on-oj-action="[[createTeacher]]">Submit</oj-button>
+          </div>
+      </oj-dialog>
+       
+      </div>
+        
+  </div>
+    
+</div>

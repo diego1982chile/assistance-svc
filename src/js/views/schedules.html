@@ -1,0 +1,235 @@
+<!--
+ Copyright (c) 2014, 2021, Oracle and/or its affiliates.
+ Licensed under The Universal Permissive License (UPL), Version 1.0
+ as shown at https://oss.oracle.com/licenses/upl/
+ -->
+
+ <STYLE TYPE="text/css">
+     
+  .oj-datagrid-column-header-cell, .oj-datagrid-column-header-label {
+    height: 2.28571rem;
+    padding: .5em;
+    justify-content:center !important;
+    align-items: center !important;
+    box-sizing: border-box;
+  }
+
+  
+  .link-button .oj-button-text {
+      color: #02629f !important;
+      cursor:pointer;
+  }
+  
+  .link-button .oj-button-text:hover {
+      text-decoration:underline;    
+  }
+  
+  
+  .link-button button {
+      border: 0px !important;    
+  }
+  
+  .oj-datagrid-cell {
+      justify-content: center
+  }
+      
+  </STYLE>
+  
+
+<div class="oj-hybrid-padding">
+  <h1>Schedules</h1>
+  <div>
+    <div id="componentDemoContent" class="oj-flex">    
+
+    
+        <div id="tableWrapper" class="oj-xl-3 oj-lg-12 oj-md-12 oj-sm-12 oj-flex-item oj-flex">
+
+            <oj-list-view
+              id="listview"
+              aria-label="list to show selection features"
+              class="oj-listview-item-padding-off"
+              on-selected-changed="[[handleSelectedTeacherChanged]]"
+              data="[[teachers]]" style="height: 37rem;"
+              value="{{teacher}}"              
+              selection-mode="single">
+              <template slot="itemTemplate" data-oj-as="item">
+                <oj-list-item-layout>
+                  <span class="oj-typography-body-md oj-text-color-primary">
+                    <oj-bind-text value="[[item.data.firstName + ' ' + item.data.lastName]]"></oj-bind-text>
+                  </span>
+                  <oj-avatar slot="leading" size="xs" src="[[item.item.data.image]]"></oj-avatar>
+                  <span slot="secondary" class="oj-typography-body-sm oj-text-color-secondary">
+                    <oj-bind-text value="[[item.item.data.email]]"></oj-bind-text>
+                  </span>
+                </oj-list-item-layout>
+              </template>
+            </oj-list-view>
+               
+        </div>
+        
+
+        <div id="tableWrapper" class="oj-xl-9 oj-lg-12 oj-md-12 oj-sm-12 oj-flex-item oj-flex">
+
+    
+            <div aria-labelledby="grouplabel1" style="min-width:200px">            
+                <oj-select-single
+                    id="select1"
+                    label-hint="Select teacher"
+                    label-edge="inside"
+                    class="oj-form-control-max-width-md"
+                    data="[[teachers]]"
+                    value="{{teacher}}"
+                    item-text="[[getItemText]]">
+                    <template slot="collectionTemplate" data-oj-as="collection">
+                    <oj-list-view
+                        id="listView1"
+                        aria-label="select results"
+                        gridlines.item="hidden"
+                        selection-mode="single"
+                        class="oj-select-results oj-group-header-sm"
+                        data="[[collection.data]]"
+                        selected="[[collection.selected]]"
+                        on-selected-changed="[[handleSelectedTeacherChanged]]"
+                        current-item="{{collection.currentRow.rowKey}}"
+                        on-oj-item-action="[[collection.handleRowAction]]">
+                        <template slot="itemTemplate" data-oj-as="item">
+                        <oj-list-item-layout class="oj-listitemlayout-padding-off">
+                            <span class="oj-typography-body-md oj-text-color-primary">
+                            <oj-highlight-text
+                                text='[[item.data.firstName + " " + item.data.lastName]]'
+                                match-text="[[collection.searchText]]"></oj-highlight-text>
+                            </span>            
+                            <span slot="secondary" class="oj-typography-body-sm oj-text-color-secondary">
+                            <oj-highlight-text
+                                text="[[item.data.email]]"
+                                match-text="[[collection.searchText]]"></oj-highlight-text>
+                            </span>
+                            <span slot="metadata" class="oj-typography-body-sm oj-text-color-secondary">
+                            <oj-highlight-text
+                                text="[[item.data.phone]]"
+                                match-text="[[collection.searchText]]"></oj-highlight-text>
+                            </span>
+                        </oj-list-item-layout>
+                        </template>
+                    </oj-list-view>
+                    </template>
+                </oj-select-single>      
+            </div>
+        
+            
+            <oj-form-layout id="myForm" label-edge="top" columns="1" max-columns="1" style="width:100%"> 
+                <oj-button chroming="callToAction" on-oj-action="[[createEvents]]" id='borderlessPushIcon' style="float:right" >                      
+                    Create Events
+                </oj-button> 
+        
+                <div id="datagrid-container">
+                    <oj-data-grid id="datagrid" 
+                    style="width:100%;height:514px;max-width:1100px;" 
+                    aria-label="Data Grid Formatted Row Based Grid Demo"
+                    selection-mode.cell="single"
+                    data="[[dataSource]]"
+                    edit-mode="cellEdit"           
+                    banding-interval.row="1"
+                    on-selection-changed="[[selectionChangedListener]]"              
+                    header.column.renderer="[[KnockoutTemplateUtils.getRenderer('header_template')]]"              
+                    header.column.style="width:188px; justify-content:center !important;"
+                    header.column.sortable="disable"               
+                    header.row.style="height:60px; min-width:110px; max-width:120px; justify-content:center !important;"
+                    header.column.class-name="demo-data-grid-header-row"
+                    cell.renderer="[[KnockoutTemplateUtils.getRenderer('cell_template')]]"
+                    cell.class-name="[[getCellClassName]]">                
+                  </oj-data-grid>
+                  
+                  <script type="text/html" id="header_template">
+                      <oj-bind-if test="[[true]]">
+                          <span><oj-bind-text value="[[$context.key]]"></oj-bind-text></span> 
+                      </oj-bind-if>              
+                  </script>
+                
+                  <script type="text/html" id="cell_template">                 
+                    <oj-bind-if test="[[$data.id !== null]]">                   
+                        <a href="#" style="text-align: center;">
+                            <oj-bind-text value="[[$data.subject.name]]" class="oj-link-standalone oj-link-subtle-primary"></oj-bind-text>                                                                                                                                                                                                                                                                                                                                                    
+                            <br>
+                            <oj-bind-text value="[[$data.room.name]]" class="oj-link-standalone oj-link-subtle-primary"></oj-bind-text>                                                                                                                                                                                                                                                                                                                             
+                        </a>                                                                                                             
+                    </oj-bind-if>  
+                    <oj-bind-if test="[[$data.id === null]]">
+                        <i class="oj-text-color-disabled">                                          
+                            This schedule is available
+                        </i>
+                    </oj-bind-if>                                      
+                  </script>
+                  
+                </div>
+            </oj-form-layout>
+
+        </div>
+
+    </div>                   
+  
+
+    <oj-dialog id="dialog1" dialog-title="New Schedule" cancel-behavior="icon">
+        <div slot="body">
+            <oj-form-layout id="myForm" label-edge="start" columns="1" max-columns="1" style="width:100%">
+                <oj-select-single
+                    id="begins"
+                    class="oj-form-control-max-width-md"
+                    label-hint="Begin"
+                    data="[[begins]]"
+                    value="{{begin}}"
+                    readonly
+                    required="required">                    
+                </oj-select-single>
+                <oj-select-single
+                    id="ends"
+                    class="oj-form-control-max-width-md"
+                    label-hint="End"
+                    data="[[ends]]"
+                    value="{{end}}"
+                    readonly
+                    required="required">                    
+                </oj-select-single>  
+                <oj-bind-if test="[[isNew]]">
+                    <oj-select-single
+                        id="subjects"
+                        class="oj-form-control-max-width-md"
+                        label-hint="Subject"
+                        data="[[subjects]]"
+                        value="{{subject}}"
+                        required="required">                    
+                    </oj-select-single>                  
+                    <oj-select-single
+                        id="rooms"
+                        class="oj-form-control-max-width-md"
+                        label-hint="Room"
+                        data="[[rooms]]"
+                        value="{{room}}"                    
+                        required="required">                    
+                    </oj-select-single>  
+                </oj-bind-if>     
+                <oj-bind-if test="[[!isNew()]]">                    
+                    <oj-input-text
+                        id="subject"
+                        class="oj-form-control-max-width-md"
+                        label-hint="Subject"
+                        readonly                        
+                        value="{{subject}}"
+                        required="required">                    
+                    </oj-input-text>                  
+                    <oj-input-text
+                        id="room"
+                        class="oj-form-control-max-width-md"
+                        label-hint="Room"                        
+                        readonly
+                        value="{{room}}"                    
+                        required="required">                    
+                    </oj-input-text>  
+                </oj-bind-if>                      
+            </oj-form-layout> 
+        </div>
+        <div slot="footer">
+            <oj-button id="deleteButton" chroming="danger" on-oj-action="[[deleteSchedule]]" class="delete-button">Delete</oj-button>
+            <oj-button id="okButton" chroming="callToAction" on-oj-action="[[createSchedule]]">Submit</oj-button>
+        </div>
+    </oj-dialog>
